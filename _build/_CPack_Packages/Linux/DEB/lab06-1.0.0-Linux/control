@@ -1,0 +1,10 @@
+Architecture: 
+Description: Solves quadratic equations
+ A simple solver for quadratic equations
+Maintainer: max2007varlamov@gmail.com
+Package: lab06
+Priority: optional
+Section: devel
+Version: 1.0.0
+Installed-Size: 0
+
