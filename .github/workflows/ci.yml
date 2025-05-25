@@ -1,0 +1,165 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ rpm
+
+      - name: Create build directory
+        run: mkdir -p build
+
+      - name: Configure CMake
+        working-directory: ./build
+        run: cmake ..
+
+      - name: Build
+        working-directory: ./build
+        run: cmake --build .
+
+      - name: Run tests
+        working-directory: ./build
+        run: ctest --output-on-failure
+
+  release:
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ rpm
+          wget https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-amd64.deb
+          sudo dpkg -i pandoc-2.17.1.1-1-amd64.deb
+
+      - name: Create build directory
+        run: mkdir -p build
+
+      - name: Configure CMake
+        working-directory: ./build
+        run: cmake .. -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        working-directory: ./build
+        run: cmake --build .
+
+      - name: Generate source archives
+        run: |
+          mkdir -p artifacts
+          git archive --format=tar.gz --prefix=lab06-${{ github.event.release.tag_name }}/ -o artifacts/lab06-${{ github.event.release.tag_name }}.tar.gz HEAD
+          git archive --format=zip --prefix=lab06-${{ github.event.release.tag_name }}/ -o artifacts/lab06-${{ github.event.release.tag_name }}.zip HEAD
+
+      - name: Create RPM package
+        working-directory: ./build
+        run: cpack -G "RPM"
+
+      - name: Create DEB package
+        working-directory: ./build
+        run: cpack -G "DEB"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-artifacts
+          path: |
+            artifacts/*
+            ./build/*.rpm
+            ./build/*.deb
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/*
+            ./build/*.rpm
+            ./build/*.deb
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+  windows-build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+          choco install nsis
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Configure CMake
+        working-directory: ./build
+        run: cmake ..
+
+      - name: Build
+        working-directory: ./build
+        run: cmake --build .
+
+      - name: Create MSI package
+        working-directory: ./build
+        run: cpack -G "NSIS"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-artifacts
+          path: ./build/*.msi
+  macos-build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          brew install cmake
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Configure CMake
+        working-directory: ./build
+        run: cmake ..
+
+      - name: Build
+        working-directory: ./build
+        run: cmake --build .
+
+      - name: Create DMG package
+        working-directory: ./build
+        run: cpack -G "DragNDrop"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-artifacts
+          path: ./build/*.dmg
+

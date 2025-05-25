@@ -6,40 +6,58 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Включение CPack
 include(InstallRequiredSystemLibraries)
+include(CPack)
 
 # Настройка версии
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
-
-# Включаем необходимые политики
-cmake_policy(SET CMP0002 NEW)
-cmake_policy(SET CMP0079 NEW)
-
-# Контактная информация
-set(CPACK_PACKAGE_CONTACT "max2007varlamov@gmail.com")
-
-# Описание пакета
+set(CPACK_PACKAGE_NAME "lab06")
 set(CPACK_PACKAGE_DESCRIPTION "A simple solver for quadratic equations")
-
-# Сводка описания
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Solves quadratic equations")
-
-# Файл лицензии
+set(CPACK_PACKAGE_CONTACT "max2007varlamov@gmail.com")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
-
-# Файл README
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 
-# Настройка для RPM
+# Настройка генераторов CPack
+set(CPACK_GENERATOR "TGZ;ZIP")
+if(UNIX AND NOT APPLE)
+    set(CPACK_GENERATOR "${CPACK_GENERATOR};DEB;RPM")
+elseif(APPLE)
+    set(CPACK_GENERATOR "${CPACK_GENERATOR};DragNDrop")
+elseif(WIN32)
+    set(CPACK_GENERATOR "${CPACK_GENERATOR};NSIS")
+endif()
+
+# Настройка RPM
 set(CPACK_RPM_PACKAGE_RELEASE "1")
 set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_GROUP "Development/Tools")
 
-# Включение модуля CPack
-include(CPack)
+# Настройка DEB
+set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.27)")
+
+# Настройка NSIS (Windows)
+if(WIN32)
+    set(CPACK_NSIS_DISPLAY_NAME "Lab06 Solver")
+    set(CPACK_NSIS_PACKAGE_NAME "Lab06 Solver")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\solver.exe")
+    set(CPACK_NSIS_HELP_LINK "https://github.com/your-repo/lab06")
+    set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/your-repo/lab06")
+    set(CPACK_NSIS_MODIFY_PATH ON)
+endif()
+
+# Настройка DragNDrop (macOS)
+if(APPLE)
+    set(CPACK_DMG_VOLUME_NAME "Lab06 Solver")
+    set(CPACK_DMG_FORMAT "UDBZ")
+    set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/background.png")
+endif()
 
 # Подключаем подпроекты в правильном порядке
 add_subdirectory(formatter_lib)
 add_subdirectory(formatter_ex_lib)
-add_subdirectory(solver_lib)  # Добавляем solver_lib
+add_subdirectory(solver_lib)
 add_subdirectory(solver_application)
+
