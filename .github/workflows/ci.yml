@@ -66,7 +66,12 @@ jobs:
       - name: Package
         run: |
           cd build
-          cpack -G NSIS
+
+      - name: Create MSI package
+        run: cpack -G NSIS
+
+      - name: List build directory contents
+        run: ls -R build
 
       - name: Upload assets to GitHub release
         uses: softprops/action-gh-release@v1
@@ -74,8 +79,7 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Solver Release ${{ github.ref_name }}
           body: Solver built from lab06 with MSI package
-          files: |
-            build/*.msi
+          files: build/**/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -99,18 +103,18 @@ jobs:
       - name: Build
         run: cmake --build build
 
-      - name: Package
-        run: |
-          cd build
-          cpack -G DragNDrop
+      - name: Create DMG package
+        run: cd build && cpack -G DragNDrop
 
-      - name: Upload assets to GitHub release
+      - name: List build directory contents
+        run: ls -R build
+
+      - name: Upload DMG to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
           name: Solver Release ${{ github.ref_name }}
           body: Solver built from lab06 with DMG package
-          files: |
-            build/*.dmg
+          files: build/*.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
