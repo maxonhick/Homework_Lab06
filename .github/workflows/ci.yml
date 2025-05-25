@@ -81,7 +81,7 @@ jobs:
         run: cpack -G "DEB"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4.4
         with:
           name: release-artifacts
           path: |
@@ -128,7 +128,7 @@ jobs:
         run: cpack -G "NSIS"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4.4
         with:
           name: windows-artifacts
           path: ./build/*.msi
@@ -160,7 +160,7 @@ jobs:
         run: cpack -G "DragNDrop"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4.4
         with:
           name: macos-artifacts
           path: ./build/*.dmg
