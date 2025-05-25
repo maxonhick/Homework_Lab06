@@ -47,6 +47,7 @@ if(WIN32)
     set(CPACK_NSIS_HELP_LINK "https://github.com/your-repo/lab06")
     set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/your-repo/lab06")
     set(CPACK_NSIS_MODIFY_PATH ON)
+    set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
 endif()
 
 # Настройка DragNDrop (macOS)
