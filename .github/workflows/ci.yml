@@ -2,110 +2,52 @@ name: CI
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-  release:
-    types:
-      - created
+    tags:
+      - 'v*.*.*'
 
 jobs:
-  build:
+  linux-build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake g++ rpm
-
-      - name: Create build directory
-        run: mkdir -p build
+          sudo apt-get install -y rpm dpkg cmake build-essential
 
       - name: Configure CMake
-        working-directory: ./build
-        run: cmake ..
+        run: cmake -S . -B build -DCPACK_GENERATOR="DEB;RPM"
 
       - name: Build
-        working-directory: ./build
-        run: cmake --build .
+        run: cmake --build build
 
-      - name: Run tests
-        working-directory: ./build
-        run: ctest --output-on-failure
-
-  release:
-    if: github.event_name == 'release'
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install dependencies
+      - name: Package
         run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake g++ rpm
-          wget https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-amd64.deb
-          sudo dpkg -i pandoc-2.17.1.1-1-amd64.deb
+          cd build
+          cpack -G DEB
+          cpack -G RPM
 
-      - name: Create build directory
-        run: mkdir -p build
-
-      - name: Configure CMake
-        working-directory: ./build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Release
-
-      - name: Build
-        working-directory: ./build
-        run: cmake --build .
-
-      - name: Generate source archives
-        run: |
-          mkdir -p artifacts
-          git archive --format=tar.gz --prefix=lab06-${{ github.event.release.tag_name }}/ -o artifacts/lab06-${{ github.event.release.tag_name }}.tar.gz HEAD
-          git archive --format=zip --prefix=lab06-${{ github.event.release.tag_name }}/ -o artifacts/lab06-${{ github.event.release.tag_name }}.zip HEAD
-
-      - name: Create RPM package
-        working-directory: ./build
-        run: cpack -G "RPM"
-
-      - name: Create DEB package
-        working-directory: ./build
-        run: cpack -G "DEB"
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4.4
-        with:
-          name: release-artifacts
-          path: |
-            artifacts/*
-            ./build/*.rpm
-            ./build/*.deb
-
-      - name: Create Release
+      - name: Upload assets to GitHub release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.ref_name }}
+          name: Solver Release ${{ github.ref_name }}
+          body: Solver built from lab06 with DEB and RPM packages
           files: |
-            artifacts/*
-            ./build/*.rpm
-            ./build/*.deb
-          draft: false
-          prerelease: false
-          generate_release_notes: true
+            build/*.deb
+            build/*.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   windows-build:
     runs-on: windows-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -116,29 +58,33 @@ jobs:
         run: mkdir build
 
       - name: Configure CMake
-        working-directory: ./build
-        run: cmake ..
+        run: cmake -S . -B build -DCPACK_GENERATOR="NSIS"
 
       - name: Build
-        working-directory: ./build
-        run: cmake --build .
+        run: cmake --build build
 
-      - name: Create MSI package
-        working-directory: ./build
-        run: cpack -G "NSIS"
+      - name: Package
+        run: |
+          cd build
+          cpack -G NSIS
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4.4
+      - name: Upload assets to GitHub release
+        uses: softprops/action-gh-release@v1
         with:
-          name: windows-artifacts
-          path: ./build/*.msi
+          tag_name: ${{ github.ref_name }}
+          name: Solver Release ${{ github.ref_name }}
+          body: Solver built from lab06 with MSI package
+          files: |
+            build/*.msi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   macos-build:
     runs-on: macos-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -148,20 +94,23 @@ jobs:
         run: mkdir build
 
       - name: Configure CMake
-        working-directory: ./build
-        run: cmake ..
+        run: cmake -S . -B build -DCPACK_GENERATOR="DragNDrop"
 
       - name: Build
-        working-directory: ./build
-        run: cmake --build .
+        run: cmake --build build
 
-      - name: Create DMG package
-        working-directory: ./build
-        run: cpack -G "DragNDrop"
+      - name: Package
+        run: |
+          cd build
+          cpack -G DragNDrop
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4.4
+      - name: Upload assets to GitHub release
+        uses: softprops/action-gh-release@v1
         with:
-          name: macos-artifacts
-          path: ./build/*.dmg
-
+          tag_name: ${{ github.ref_name }}
+          name: Solver Release ${{ github.ref_name }}
+          body: Solver built from lab06 with DMG package
+          files: |
+            build/*.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
