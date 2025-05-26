@@ -65,10 +65,10 @@ jobs:
         run: cmake --build build
 
       - name: Create MSI package
-        run: cd build
+        run: dir /s /b build && cd build
 
       - name: List build directory contents
-        run: dir /s /b build && cpack -G NSIS
+        run: cpack -G NSIS
 
       - name: Upload assets to GitHub release
         uses: softprops/action-gh-release@v1
