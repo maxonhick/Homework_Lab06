@@ -41,6 +41,10 @@ set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ваше имя <ваш.email@example.com>"
 
 # Настройка NSIS (Windows)
 if(WIN32)
+    set(CPACK_PACKAGE_VERSION_MAJOR "1")
+    set(CPACK_PACKAGE_VERSION_MINOR "0")
+    set(CPACK_PACKAGE_VERSION_PATCH "0")
+    set(CPACK_PACKAGE_NAME "lab06")
     set(CPACK_NSIS_DISPLAY_NAME "Lab06 Solver")
     set(CPACK_NSIS_PACKAGE_NAME "Lab06 Solver")
     set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\solver.exe")
