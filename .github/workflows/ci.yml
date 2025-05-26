@@ -65,7 +65,7 @@ jobs:
         run: cmake --build build
 
       - name: Create MSI package
-        run: dir /s /b build && cd build
+        run: cd build && dir
 
       - name: List build directory contents
         run: cpack -G NSIS
