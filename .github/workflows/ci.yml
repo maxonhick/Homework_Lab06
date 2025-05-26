@@ -68,7 +68,7 @@ jobs:
         run: cd build && dir
 
       - name: List build directory contents
-        run: cpack -G NSIS
+        run: cpack -G NSIS -P "lab06"
 
       - name: Upload assets to GitHub release
         uses: softprops/action-gh-release@v1
