@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'v*.*.*'
+      
+permissions:
+  contents: write
 
 jobs:
   linux-build:
@@ -74,9 +77,6 @@ jobs:
       - name: Upload assets to GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Solver Release ${{ github.ref_name }}
-          body: Solver built from lab06 with MSI package
           files: build/**/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,9 +110,6 @@ jobs:
       - name: Upload DMG to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Solver Release ${{ github.ref_name }}
-          body: Solver built from lab06 with DMG package
           files: build/*.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
