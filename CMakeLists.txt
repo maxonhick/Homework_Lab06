@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Включение CPack
 include(InstallRequiredSystemLibraries)
-include(CPack)
 
 # Настройка версии
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
@@ -38,6 +37,7 @@ set(CPACK_RPM_PACKAGE_GROUP "Development/Tools")
 # Настройка DEB
 set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.27)")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ваше имя <ваш.email@example.com>")
 
 # Настройка NSIS (Windows)
 if(WIN32)
@@ -56,6 +56,8 @@ if(APPLE)
     set(CPACK_DMG_FORMAT "UDBZ")
     set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/background.png")
 endif()
+
+include(CPack)
 
 # Подключаем подпроекты в правильном порядке
 add_subdirectory(formatter_lib)

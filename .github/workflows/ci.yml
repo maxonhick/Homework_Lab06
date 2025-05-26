@@ -17,6 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y rpm dpkg cmake build-essential
+          dpkg --version
 
       - name: Configure CMake
         run: cmake -S . -B build -DCPACK_GENERATOR="DEB;RPM"
@@ -33,9 +34,6 @@ jobs:
       - name: Upload assets to GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Solver Release ${{ github.ref_name }}
-          body: Solver built from lab06 with DEB and RPM packages
           files: |
             build/*.deb
             build/*.rpm
