@@ -40,18 +40,16 @@ set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.27)")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ваше имя <ваш.email@example.com>")
 
 # Настройка NSIS (Windows)
-if(WIN32)
-    set(CPACK_PACKAGE_VERSION_MAJOR "1")
-    set(CPACK_PACKAGE_VERSION_MINOR "0")
-    set(CPACK_PACKAGE_VERSION_PATCH "0")
+if(WIN32)set(CPACK_GENERATOR "WIX")
+    # Указываем WiX как генератор
+    set(CPACK_GENERATOR "WIX")
+
+    # Имя и версия продукта
     set(CPACK_PACKAGE_NAME "lab06")
-    set(CPACK_NSIS_DISPLAY_NAME "Lab06 Solver")
-    set(CPACK_NSIS_PACKAGE_NAME "Lab06 Solver")
-    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\solver.exe")
-    set(CPACK_NSIS_HELP_LINK "https://github.com/your-repo/lab06")
-    set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/your-repo/lab06")
-    set(CPACK_NSIS_MODIFY_PATH ON)
-    set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
+    set(CPACK_PACKAGE_VERSION "1.0.0")
+
+    # Файл лицензии (в формате RTF)
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 endif()
 
 # Настройка DragNDrop (macOS)
