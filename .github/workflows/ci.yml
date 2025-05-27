@@ -70,7 +70,7 @@ jobs:
       - name: List build directory contents
         run: |
           cd build
-          cpack -G NSIS -P "lab06" -R "1.0.0"
+          cpack -G WIX
 
       - name: Upload assets to GitHub release
         uses: softprops/action-gh-release@v1
