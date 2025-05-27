@@ -75,7 +75,7 @@ jobs:
       - name: Upload assets to GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          files: build/**/*.msi
+          files: build/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
