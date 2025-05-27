@@ -26,7 +26,7 @@ if(UNIX AND NOT APPLE)
 elseif(APPLE)
     set(CPACK_GENERATOR "${CPACK_GENERATOR};DragNDrop")
 elseif(WIN32)
-    set(CPACK_GENERATOR "${CPACK_GENERATOR};NSIS")
+	set(CPACK_GENERATOR "WIX")
 endif()
 
 # Настройка RPM
@@ -43,6 +43,8 @@ set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ваше имя <ваш.email@example.com>"
 if(WIN32)
     # Указываем WiX как генератор
     set(CPACK_GENERATOR "WIX")
+
+    set(CPACK_WIX_PRODUCT_GUID "CDF8CD0C-12F9-4599-87D7-ACD9FAB2B27C")
 
     # Имя и версия продукта
     set(CPACK_PACKAGE_NAME "lab06")
